@@ -12,7 +12,7 @@ using PersonalFinanceApp.Data;
 namespace PersonalFinanceApp.Data.Migrations
 {
     [DbContext(typeof(FinanceDbContext))]
-    [Migration("20230110130257_Initial")]
+    [Migration("20230111153827_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -45,14 +45,9 @@ namespace PersonalFinanceApp.Data.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Expenses");
                 });
@@ -69,7 +64,12 @@ namespace PersonalFinanceApp.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("ExpenseCategories");
                 });
@@ -94,14 +94,9 @@ namespace PersonalFinanceApp.Data.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Incomes");
                 });
@@ -118,7 +113,12 @@ namespace PersonalFinanceApp.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("IncomeCategories");
                 });
@@ -147,18 +147,21 @@ namespace PersonalFinanceApp.Data.Migrations
             modelBuilder.Entity("PersonalFinanceApp.Data.Entities.Expense", b =>
                 {
                     b.HasOne("PersonalFinanceApp.Data.Entities.ExpenseCategory", "Category")
-                        .WithMany()
+                        .WithMany("Expenses")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("PersonalFinanceApp.Data.Entities.ExpenseCategory", b =>
+                {
                     b.HasOne("PersonalFinanceApp.Data.Entities.User", "User")
-                        .WithMany("Expenses")
+                        .WithMany("ExpenseCategories")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Category");
 
                     b.Navigation("User");
                 });
@@ -166,27 +169,40 @@ namespace PersonalFinanceApp.Data.Migrations
             modelBuilder.Entity("PersonalFinanceApp.Data.Entities.Income", b =>
                 {
                     b.HasOne("PersonalFinanceApp.Data.Entities.IncomeCategory", "Category")
-                        .WithMany()
+                        .WithMany("Incomes")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("PersonalFinanceApp.Data.Entities.IncomeCategory", b =>
+                {
                     b.HasOne("PersonalFinanceApp.Data.Entities.User", "User")
-                        .WithMany("Incomes")
+                        .WithMany("IncomeCategories")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Category");
-
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("PersonalFinanceApp.Data.Entities.ExpenseCategory", b =>
+                {
+                    b.Navigation("Expenses");
+                });
+
+            modelBuilder.Entity("PersonalFinanceApp.Data.Entities.IncomeCategory", b =>
+                {
+                    b.Navigation("Incomes");
                 });
 
             modelBuilder.Entity("PersonalFinanceApp.Data.Entities.User", b =>
                 {
-                    b.Navigation("Expenses");
+                    b.Navigation("ExpenseCategories");
 
-                    b.Navigation("Incomes");
+                    b.Navigation("IncomeCategories");
                 });
 #pragma warning restore 612, 618
         }

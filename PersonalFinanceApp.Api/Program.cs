@@ -4,6 +4,8 @@ using PersonalFinanceApp.Data;
 using PersonalFinanceApp.Data.Entities;
 using PersonalFinanceApp.Data.Interfaces;
 using PersonalFinanceApp.Data.Repositories;
+using PersonalFinanceApp.Services;
+using PersonalFinanceApp.Services.Seeders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,15 +18,17 @@ builder.Services.AddDbContext<FinanceDbContext>(options =>
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // Repositories
-builder.Services.AddScoped<IRepository<IncomeCategory>, Repository<IncomeCategory>>();
-builder.Services.AddScoped<IRepository<ExpenseCategory>, Repository<ExpenseCategory>>();
+builder.Services.AddScoped<IRepository<User>, Repository<User>>();
 builder.Services.AddScoped<IRepository<Income>, Repository<Income>>();
 builder.Services.AddScoped<IRepository<Expense>, Repository<Expense>>();
+builder.Services.AddScoped<IRepository<IncomeCategory>, Repository<IncomeCategory>>();
+builder.Services.AddScoped<IRepository<ExpenseCategory>, Repository<ExpenseCategory>>();
 
 builder.Services.AddScoped<IFinanceUnitOfWork, FinanceUnitOfWork>();
 
-// Services
-
+// Service
+builder.Services.AddScoped<FinanceSeeder>();
+builder.Services.AddScoped<TestingService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -58,6 +62,11 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
+
+// Seed Sample Data
+app.Services.CreateScope()
+    .ServiceProvider.GetRequiredService<FinanceSeeder>()
+    .Seed();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

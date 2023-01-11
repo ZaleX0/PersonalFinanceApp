@@ -1,6 +1,6 @@
 ﻿namespace PersonalFinanceApp.Data.Interfaces;
 
-public interface IEntity
+public interface IBaseEntity
 {
     public int Id { get; set; }
 }

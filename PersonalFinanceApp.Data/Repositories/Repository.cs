@@ -3,7 +3,7 @@ using PersonalFinanceApp.Data.Interfaces;
 
 namespace PersonalFinanceApp.Data.Repositories;
 
-public class Repository<T> : IRepository<T> where T : class, IEntity
+public class Repository<T> : IRepository<T> where T : class, IBaseEntity
 {
     protected readonly FinanceDbContext _context;
     protected readonly DbSet<T> _dbSet;
