@@ -15,6 +15,9 @@ public class FinanceSeeder
 
 	public void Seed()
 	{
+		// TODO: Seed
+		return;
+
 		if (!_context.Database.CanConnect())
 			return;
 
@@ -59,10 +62,10 @@ public class FinanceSeeder
 
 	private User GetUser()
 	{
-        return new User
-        {
-            Username = "user",
-            Hash = "user"
+		return new User
+		{
+			Username = "user",
+			//Hash = "user"
         };
     }
 }
