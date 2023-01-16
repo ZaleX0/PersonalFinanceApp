@@ -4,9 +4,11 @@ namespace PersonalFinanceApp.Data.Interfaces;
 
 public interface IFinanceUnitOfWork
 {
-    IRepository<User> User { get; }
-    IRepository<IncomeCategory> IncomeCategories { get; }
-    IRepository<ExpenseCategory> ExpenseCategories { get; }
+    IRepository<User> Users { get; }
     IRepository<Income> Incomes { get; }
     IRepository<Expense> Expenses { get; }
+    IRepository<IncomeCategory> IncomeCategories { get; }
+    IRepository<ExpenseCategory> ExpenseCategories { get; }
+
+    Task<int> CommitAsync();
 }

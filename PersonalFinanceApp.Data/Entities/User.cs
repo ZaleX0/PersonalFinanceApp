@@ -2,12 +2,12 @@
 
 namespace PersonalFinanceApp.Data.Entities;
 
-public class User : IEntity
+public class User : IBaseEntity
 {
     public int Id { get; set; }
     public string Username { get; set; }
     public string Hash { get; set; }
 
-    virtual public ICollection<Income> Incomes { get; set; }
-    virtual public ICollection<Expense> Expenses { get; set; }
+    virtual public ICollection<IncomeCategory> IncomeCategories { get; set; }
+    virtual public ICollection<ExpenseCategory> ExpenseCategories { get; set; }
 }
