@@ -10,4 +10,5 @@ public class ExpenseCategory : IBaseEntity
 
     virtual public User User { get; set; }
     virtual public ICollection<Expense> Expenses { get; set; }
+    virtual public ICollection<RegularExpense> RegularExpenses { get; set; }
 }

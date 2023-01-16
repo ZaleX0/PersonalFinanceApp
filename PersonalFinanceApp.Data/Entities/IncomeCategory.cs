@@ -10,4 +10,5 @@ public class IncomeCategory : IBaseEntity
 
     virtual public User User { get; set; }
     virtual public ICollection<Income> Incomes { get; set; }
+    virtual public ICollection<RegularIncome> RegularIncomes { get; set; }
 }
