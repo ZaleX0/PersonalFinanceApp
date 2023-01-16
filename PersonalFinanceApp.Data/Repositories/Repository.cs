@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PersonalFinanceApp.Data.Interfaces;
+using System.Linq.Expressions;
 
 namespace PersonalFinanceApp.Data.Repositories;
 

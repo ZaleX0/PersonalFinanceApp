@@ -1,71 +1,41 @@
-﻿using PersonalFinanceApp.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using PersonalFinanceApp.Data;
 using PersonalFinanceApp.Data.Entities;
 using PersonalFinanceApp.Data.Interfaces;
+using PersonalFinanceApp.Services.Interfaces;
+using PersonalFinanceApp.Services.Models.User;
 
 namespace PersonalFinanceApp.Services.Seeders;
 
 public class FinanceSeeder
 {
 	private readonly FinanceDbContext _context;
+	private readonly IAuthService _authService;
 
-	public FinanceSeeder(FinanceDbContext context)
+	public FinanceSeeder(FinanceDbContext context, IAuthService authService)
 	{
 		_context = context;
+		_authService = authService;
 	}
 
-	public void Seed()
+	public async Task SeedAsync()
 	{
-		// TODO: Seed
-		return;
-
 		if (!_context.Database.CanConnect())
 			return;
 
 		if (!_context.Users.Any())
 		{
-			var user = GetUser();
-            _context.Users.Add(user);
-
-			var ic = new IncomeCategory
-			{
-				User = user,
-				Name = "Income Category"
-			};
-			var ec = new ExpenseCategory
-			{
-				User = user,
-				Name = "Expense Category"
-			};
-            _context.IncomeCategories.Add(ic);
-            _context.ExpenseCategories.Add(ec);
-
-			_context.Incomes.Add(new Income
-			{
-				Category = ic,
-				Price = 1.00m,
-				Date = DateTime.Now,
-				Comment = "Income"
-			});
-
-            _context.Expenses.Add(new Expense
-            {
-                Category = ec,
-                Price = 1.00m,
-                Date = DateTime.Now,
-                Comment = "Expense"
-            });
-
-			_context.SaveChanges();
+			await RegisterUserAsync();
         }
-
 	}
 
-	private User GetUser()
+	private async Task RegisterUserAsync()
 	{
-		return new User
+		var registerDto = new RegisterUserDto
 		{
-			Username = "user",
-			//Hash = "user"
-        };
+			Username = "string",
+			Password = "string"
+		};
+        await _authService.Register(registerDto);
     }
 }

@@ -11,7 +11,7 @@ using PersonalFinanceApp.Data.Repositories;
 using PersonalFinanceApp.Services;
 using PersonalFinanceApp.Services.Interfaces;
 using PersonalFinanceApp.Services.Middleware;
-using PersonalFinanceApp.Services.Models;
+using PersonalFinanceApp.Services.Models.User;
 using PersonalFinanceApp.Services.Models.Validators;
 using PersonalFinanceApp.Services.Seeders;
 using System.Text;
@@ -68,6 +68,9 @@ builder.Services.AddScoped<IFinanceUnitOfWork, FinanceUnitOfWork>();
 
 // Service
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IIncomeCategoriesService, IncomeCategoriesService>();
+builder.Services.AddScoped<IExpenseCategoriesService, ExpenseCategoriesService>();
+builder.Services.AddScoped<IIncomesService, IncomesService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IUserContextService, UserContextService>();
 
@@ -110,9 +113,10 @@ builder.Services.AddSwaggerGen(options =>
 var app = builder.Build();
 
 // Seed Sample Data
-app.Services.CreateScope()
+await app
+    .Services.CreateScope()
     .ServiceProvider.GetRequiredService<FinanceSeeder>()
-    .Seed();
+    .SeedAsync();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

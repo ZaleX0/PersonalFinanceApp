@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PersonalFinanceApp.Services.Interfaces;
-using PersonalFinanceApp.Services.Models;
+using PersonalFinanceApp.Services.Models.User;
 
 namespace PersonalFinanceApp.Api.Controllers;
 

@@ -1,4 +1,6 @@
-﻿namespace PersonalFinanceApp.Data.Interfaces;
+﻿using System.Linq.Expressions;
+
+namespace PersonalFinanceApp.Data.Interfaces;
 
 public interface IRepository<T>
 {

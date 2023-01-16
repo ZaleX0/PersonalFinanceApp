@@ -1,4 +1,4 @@
-﻿namespace PersonalFinanceApp.Services.Models;
+﻿namespace PersonalFinanceApp.Services.Models.User;
 
 public class RegisterUserDto
 {

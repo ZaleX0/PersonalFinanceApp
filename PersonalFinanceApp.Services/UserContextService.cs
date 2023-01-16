@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using PersonalFinanceApp.Services.Exceptions;
 using PersonalFinanceApp.Services.Interfaces;
 using System.Security.Claims;
 
@@ -15,7 +16,11 @@ public class UserContextService : IUserContextService
 
 	public ClaimsPrincipal? User => _httpContextAccessor.HttpContext?.User;
 
-	public int? GetUserId => User != null
+	public int? UserId => User != null
 		? int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value)
 		: null;
+
+	public int TryGetUserId() => UserId != null
+		? (int) UserId
+		: throw new NotFoundException("User not found");
 }

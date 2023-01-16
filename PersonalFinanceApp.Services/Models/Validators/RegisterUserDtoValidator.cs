@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 using PersonalFinanceApp.Data;
-using PersonalFinanceApp.Data.Entities;
+using PersonalFinanceApp.Services.Models.User;
 
 namespace PersonalFinanceApp.Services.Models.Validators;
 
@@ -15,7 +15,7 @@ public class RegisterUserDtoValidator : AbstractValidator<RegisterUserDto>
 			var usernameInUse = dbContext.Users.Any(u => u.Username.ToLower() == value.ToLower());
 			if (usernameInUse)
 			{
-				context.AddFailure(nameof(User.Username), "That username is taken");
+				context.AddFailure("Username", "That username is taken");
 			}
 		});
 	}

@@ -23,7 +23,7 @@ public class ErrorHandlingMiddleware : IMiddleware
         }
         catch (Exception e)
 		{
-			Console.WriteLine(e.Message);
+			Console.WriteLine("EXCEPTION: " + e.Message);
 
 			context.Response.StatusCode = 500;
 			await context.Response.WriteAsync("Something went wrong");

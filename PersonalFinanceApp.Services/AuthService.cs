@@ -6,10 +6,9 @@ using PersonalFinanceApp.Data.Entities;
 using PersonalFinanceApp.Data.Interfaces;
 using PersonalFinanceApp.Services.Exceptions;
 using PersonalFinanceApp.Services.Interfaces;
-using PersonalFinanceApp.Services.Models;
+using PersonalFinanceApp.Services.Models.User;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace PersonalFinanceApp.Services;
@@ -18,17 +17,23 @@ public class AuthService : IAuthService
 {
 	private readonly IMapper _mapper;
 	private readonly IFinanceUnitOfWork _unitOfWork;
+	private readonly IIncomeCategoriesService _incomeCategoriesService;
+	private readonly IExpenseCategoriesService _expenseCategoriesService;
 	private readonly IPasswordHasher<User> _passwordHasher;
 	private readonly AuthenticationSettings _authenticationSettings;
 
 	public AuthService(
 		IMapper mapper,
 		IFinanceUnitOfWork unitOfWork,
+		IIncomeCategoriesService incomeCategoriesService,
+		IExpenseCategoriesService expenseCategoriesService,
 		IPasswordHasher<User> passwordHasher,
 		AuthenticationSettings authenticationSettings)
 	{
 		_mapper = mapper;
 		_unitOfWork = unitOfWork;
+		_incomeCategoriesService = incomeCategoriesService;
+		_expenseCategoriesService = expenseCategoriesService;
 		_passwordHasher = passwordHasher;
 		_authenticationSettings = authenticationSettings;
 	}
@@ -64,6 +69,11 @@ public class AuthService : IAuthService
 		user.Hash = _passwordHasher.HashPassword(user, dto.Password);
 
 		await _unitOfWork.Users.AddAsync(user);
+
+		// Add default categories
+		await _incomeCategoriesService.AddDefaultForUser(user);
+		await _expenseCategoriesService.AddDefaultForUser(user);
+
 		await _unitOfWork.CommitAsync();
     }
 

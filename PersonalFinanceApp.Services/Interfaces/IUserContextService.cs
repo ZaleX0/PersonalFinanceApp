@@ -3,6 +3,7 @@
 namespace PersonalFinanceApp.Services.Interfaces;
 public interface IUserContextService
 {
-    int? GetUserId { get; }
     ClaimsPrincipal? User { get; }
+    int? UserId { get; }
+    int TryGetUserId();
 }
