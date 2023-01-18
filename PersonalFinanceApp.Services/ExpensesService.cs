@@ -47,7 +47,7 @@ public class ExpensesService : IExpensesService
         await _unitOfWork.CommitAsync();
     }
 
-    public async Task Update(UpdateExpenseDto dto, int id)
+    public async Task Update(AddExpenseDto dto, int id)
     {
         await CheckIfUserCategoryExists(dto.CategoryId);
         var expense = await GetUserExpenseById(id);

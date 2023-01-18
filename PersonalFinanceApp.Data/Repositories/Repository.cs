@@ -20,6 +20,11 @@ public class Repository<T> : IRepository<T> where T : class, IBaseEntity
         await _dbSet.AddAsync(entity);
     }
 
+    public async Task AddRangeAsync(ICollection<T> entities)
+    {
+        await _dbSet.AddRangeAsync(entities);
+    }
+
     public IQueryable<T> Get()
     {
         return _dbSet;

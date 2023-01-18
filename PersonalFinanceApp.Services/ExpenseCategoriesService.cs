@@ -86,7 +86,7 @@ public class ExpenseCategoriesService : IExpenseCategoriesService
         var userId = _userContextService.TryGetUserId();
         var expenseCategory = await _unitOfWork.ExpenseCategories.GetByIdAsync(id);
         if (expenseCategory == null || expenseCategory.UserId != userId)
-            throw new NotFoundException("Income category not found");
+            throw new NotFoundException("Category not found");
         return expenseCategory;
     }
 }

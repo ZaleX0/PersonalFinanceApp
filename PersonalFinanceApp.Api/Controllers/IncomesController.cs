@@ -12,13 +12,16 @@ public class IncomesController : ControllerBase
 {
     private readonly IIncomesService _incomesService;
 	private readonly IIncomeCategoriesService _incomeCategoriesService;
+    private readonly IRegularIncomesService _regularIncomesService;
 
     public IncomesController(
         IIncomesService incomesService,
-        IIncomeCategoriesService incomeCategoriesService)
+        IIncomeCategoriesService incomeCategoriesService,
+        IRegularIncomesService regularIncomesService)
 	{
         _incomesService = incomesService;
 		_incomeCategoriesService = incomeCategoriesService;
+        _regularIncomesService = regularIncomesService;
     }
 
     #region Income endpoints
@@ -26,6 +29,7 @@ public class IncomesController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetUserIncomes()
     {
+        await _regularIncomesService.HandleAddingIncomes();
         var incomes = await _incomesService.GetAllForUser();
         return Ok(incomes);
     }
@@ -38,7 +42,7 @@ public class IncomesController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateIncome(UpdateIncomeDto dto, int id)
+    public async Task<IActionResult> UpdateIncome(AddIncomeDto dto, int id)
     {
         await _incomesService.Update(dto, id);
         return Ok();
@@ -57,7 +61,33 @@ public class IncomesController : ControllerBase
 
     const string REGULAR = "regular";
 
-    // TODO: Regular income endpoints
+    [HttpGet(REGULAR)]
+    public async Task<IActionResult> GetUserRegularIncomes()
+    {
+        var regulars = await _regularIncomesService.GetAllForUser();
+        return Ok(regulars);
+    }
+
+    [HttpPost(REGULAR)]
+    public async Task<IActionResult> AddRegularIncome(AddRegularIncomeDto dto)
+    {
+        await _regularIncomesService.Add(dto);
+        return Ok();
+    }
+
+    [HttpPut(REGULAR + "/{id}")]
+    public async Task<IActionResult> UpdateRegularIncome(AddRegularIncomeDto dto, int id)
+    {
+        await _regularIncomesService.Update(dto, id);
+        return Ok();
+    }
+
+    [HttpDelete(REGULAR + "/{id}")]
+    public async Task<IActionResult> RemoveRegularIncome(int id)
+    {
+        await _regularIncomesService.Remove(id);
+        return Ok();
+    }
 
     #endregion
 

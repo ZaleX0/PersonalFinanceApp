@@ -44,7 +44,7 @@ public class IncomesService : IIncomesService
 		await _unitOfWork.CommitAsync();
 	}
 
-	public async Task Update(UpdateIncomeDto dto, int id)
+	public async Task Update(AddIncomeDto dto, int id)
 	{
 		await CheckIfUserCategoryExists(dto.CategoryId);
 		var income = await GetUserIncomeById(id);
