@@ -7,5 +7,5 @@ public interface IExpensesService
     Task<ICollection<ExpenseDto>> GetAllForUser();
     Task<ExpenseDto> GetByIdForUser(int id);
     Task Remove(int id);
-    Task Update(UpdateExpenseDto dto, int id);
+    Task Update(AddExpenseDto dto, int id);
 }

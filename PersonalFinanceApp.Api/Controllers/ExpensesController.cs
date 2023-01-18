@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PersonalFinanceApp.Services;
 using PersonalFinanceApp.Services.Interfaces;
 using PersonalFinanceApp.Services.Models;
 
@@ -13,22 +12,26 @@ public class ExpensesController : ControllerBase
 {
     private readonly IExpensesService _expensesService;
     private readonly IExpenseCategoriesService _expensesCategoriesService;
+    private readonly IRegularExpensesService _regularExpensesService;
 
     public ExpensesController(
         IExpensesService expensesService,
-        IExpenseCategoriesService expensesCategoriesService)
+        IExpenseCategoriesService expensesCategoriesService,
+        IRegularExpensesService regularExpensesService)
     {
         _expensesService = expensesService;
         _expensesCategoriesService = expensesCategoriesService;
+        _regularExpensesService = regularExpensesService;
     }
 
-    #region Income endpoints
+    #region Expense endpoints
 
     [HttpGet]
     public async Task<IActionResult> GetUserExpenses()
     {
-        var incomes = await _expensesService.GetAllForUser();
-        return Ok(incomes);
+        await _regularExpensesService.HandleAddingExpenses();
+        var expenses = await _expensesService.GetAllForUser();
+        return Ok(expenses);
     }
 
     [HttpPost]
@@ -39,7 +42,7 @@ public class ExpensesController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateExpense(UpdateExpenseDto dto, int id)
+    public async Task<IActionResult> UpdateExpense(AddExpenseDto dto, int id)
     {
         await _expensesService.Update(dto, id);
         return Ok();
@@ -54,11 +57,37 @@ public class ExpensesController : ControllerBase
 
     #endregion
 
-    #region Regular income endpoints
+    #region Regular expense endpoints
 
     const string REGULAR = "regular";
 
-    // TODO: Regular income endpoints
+    [HttpGet(REGULAR)]
+    public async Task<IActionResult> GetUserRegularExpenses()
+    {
+        var regulars = await _regularExpensesService.GetAllForUser();
+        return Ok(regulars);
+    }
+
+    [HttpPost(REGULAR)]
+    public async Task<IActionResult> AddRegularExpense(AddRegularExpenseDto dto)
+    {
+        await _regularExpensesService.Add(dto);
+        return Ok();
+    }
+
+    [HttpPut(REGULAR + "/{id}")]
+    public async Task<IActionResult> UpdateRegularExpense(AddRegularExpenseDto dto, int id)
+    {
+        await _regularExpensesService.Update(dto, id);
+        return Ok();
+    }
+
+    [HttpDelete(REGULAR + "/{id}")]
+    public async Task<IActionResult> RemoveRegularExpense(int id)
+    {
+        await _regularExpensesService.Remove(id);
+        return Ok();
+    }
 
     #endregion
 

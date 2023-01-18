@@ -9,6 +9,8 @@ public interface IFinanceUnitOfWork
     IRepository<Expense> Expenses { get; }
     IRepository<IncomeCategory> IncomeCategories { get; }
     IRepository<ExpenseCategory> ExpenseCategories { get; }
+    IRepository<RegularIncome> RegularIncomes { get; }
+    IRepository<RegularExpense> RegularExpenses { get; }
 
     Task<int> CommitAsync();
 }

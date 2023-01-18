@@ -63,21 +63,25 @@ builder.Services.AddScoped<IRepository<Income>, Repository<Income>>();
 builder.Services.AddScoped<IRepository<Expense>, Repository<Expense>>();
 builder.Services.AddScoped<IRepository<IncomeCategory>, Repository<IncomeCategory>>();
 builder.Services.AddScoped<IRepository<ExpenseCategory>, Repository<ExpenseCategory>>();
+builder.Services.AddScoped<IRepository<RegularIncome>, Repository<RegularIncome>>();
+builder.Services.AddScoped<IRepository<RegularExpense>, Repository<RegularExpense>>();
 
 builder.Services.AddScoped<IFinanceUnitOfWork, FinanceUnitOfWork>();
 
 // Service
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IIncomesService, IncomesService>();
+builder.Services.AddScoped<IExpensesService, ExpensesService>();
 builder.Services.AddScoped<IIncomeCategoriesService, IncomeCategoriesService>();
 builder.Services.AddScoped<IExpenseCategoriesService, ExpenseCategoriesService>();
-builder.Services.AddScoped<IIncomesService, IncomesService>();
+builder.Services.AddScoped<IRegularIncomesService, RegularIncomesService>();
+builder.Services.AddScoped<IRegularExpensesService, RegularExpensesService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IUserContextService, UserContextService>();
 
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<FinanceSeeder>();
-builder.Services.AddScoped<TestingService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

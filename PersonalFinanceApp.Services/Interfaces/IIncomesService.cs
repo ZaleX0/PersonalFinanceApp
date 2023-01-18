@@ -7,5 +7,5 @@ public interface IIncomesService
     Task<ICollection<IncomeDto>> GetAllForUser();
     Task<IncomeDto> GetByIdForUser(int id);
     Task Remove(int id);
-    Task Update(UpdateIncomeDto dto, int id);
+    Task Update(AddIncomeDto dto, int id);
 }
