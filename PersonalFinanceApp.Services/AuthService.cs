@@ -6,6 +6,7 @@ using PersonalFinanceApp.Data.Entities;
 using PersonalFinanceApp.Data.Interfaces;
 using PersonalFinanceApp.Services.Exceptions;
 using PersonalFinanceApp.Services.Interfaces;
+using PersonalFinanceApp.Services.Models;
 using PersonalFinanceApp.Services.Models.User;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -38,7 +39,7 @@ public class AuthService : IAuthService
 		_authenticationSettings = authenticationSettings;
 	}
 
-	public async Task<string> CreateToken(LoginUserDto dto)
+	public async Task<UserDto> GetUser(LoginUserDto dto)
 	{
 		var user = await GetUserByUsername(dto.Username);
 		VerifyHashedPassword(user, dto.Password);
@@ -60,7 +61,12 @@ public class AuthService : IAuthService
             signingCredentials: credentials);
 
         var tokenHandler = new JwtSecurityTokenHandler();
-        return tokenHandler.WriteToken(token);
+
+		return new UserDto
+		{
+			Username = user.Username,
+			Token = tokenHandler.WriteToken(token)
+		};
     }
 
     public async Task Register(RegisterUserDto dto)
