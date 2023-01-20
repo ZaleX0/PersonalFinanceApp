@@ -11,6 +11,7 @@ import { Navbar } from './components/Navbar';
 import GuardedRoute from './utils/GuardedRoute';
 import { AuthProvider } from './contexts/AuthContext';
 import { Register } from './pages/Register';
+import History from './pages/History';
 
 export default function App() {
   return (
@@ -25,10 +26,13 @@ export default function App() {
 
 function DefineRoutes() {
   return (
+    <>
       <Routes>
         <Route path="/login" element={<Login/>}/>
         <Route path="/register" element={<Register/>}/>
         <Route path="/" element={<GuardedRoute><Home/></GuardedRoute>}/>
+        <Route path="/history" element={<GuardedRoute><History/></GuardedRoute>}/>
       </Routes>
+    </>
   )
 }

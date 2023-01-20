@@ -2,7 +2,7 @@ import { InputText } from 'primereact/inputtext'
 import { Password } from 'primereact/password'
 import { Card } from 'primereact/card';
 import { useFormik } from 'formik';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { classNames } from 'primereact/utils';
 import { Button } from 'primereact/button';
 import { useAuth } from '../hooks/useAuth';
@@ -11,25 +11,16 @@ import { Link } from 'react-router-dom';
 
 export function Login() {
   const { login, isLogin } = useAuth();
-  const [showErrorMessage, setShowErrorMessage] = useState(false);
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  if (isLogin) {
-    navigate("/");
-  }
-
-  const fetchUser = async (data) => {
-    setLoading(true);
-    const response = await login(data.username, data.password);
-    if (response.status === 200) {
-      navigate("/")
-    } else {
-      setShowErrorMessage(true);
+  useEffect(() => {
+    if (isLogin) {
+      navigate("/");
     }
-    setLoading(false);
-  }
-
+  }, [])
+  
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const [loading, setLoading] = useState(false);  
   const formik = useFormik({
     initialValues: {
       username: '',
@@ -43,10 +34,21 @@ export function Login() {
     },
     onSubmit: (data) => {
       setShowErrorMessage(false);
-      formik.resetForm();
       fetchUser(data);
     }
   });
+
+  const fetchUser = async (data) => {
+    setLoading(true);
+    const response = await login(data.username, data.password);
+    if (response.status === 200) {
+      navigate("/")
+    } else {
+      formik.setFieldValue("password", "", false);
+      setShowErrorMessage(true);
+    }
+    setLoading(false);
+  }
 
   const isFormFieldValid = (name) => !!(formik.touched[name] && formik.errors[name]);
   const getFormErrorMessage = (name) => {
@@ -57,7 +59,7 @@ export function Login() {
     <div className="flex justify-content-center">
       <Card className="text-center pl-4 pr-4">
         <h2>Login</h2>
-        <Link to="/register">Sign up</Link>
+        Don't have an account? <Link to="/register">Sign up</Link>
         <form onSubmit={formik.handleSubmit} className="p-fluid mt-4">
           <div className="field">
             <span className="p-float-label">
@@ -68,7 +70,7 @@ export function Login() {
           </div>
           <div className="field">
             <span className="p-float-label">
-              <Password id="password" name="password" value={formik.values.password} onChange={formik.handleChange} toggleMask feedback={false} className={classNames({ 'p-invalid': isFormFieldValid('password') })} />
+              <Password id="password" name="password" value={formik.values.password} onChange={formik.handleChange} feedback={false} className={classNames({ 'p-invalid': isFormFieldValid('password') })} />
               <label htmlFor="password" className={classNames({ 'p-error': isFormFieldValid('password') })}>Password</label>
             </span>
             {getFormErrorMessage('password')}

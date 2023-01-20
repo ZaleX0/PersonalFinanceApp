@@ -2,51 +2,61 @@ import { InputText } from 'primereact/inputtext'
 import { Password } from 'primereact/password'
 import { Card } from 'primereact/card';
 import { useFormik } from 'formik';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { classNames } from 'primereact/utils';
 import { Button } from 'primereact/button';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
+import AuthService from "../services/AuthService";
 
 export function Register() {
-  const { login, isLogin } = useAuth();
-  const [showErrorMessage, setShowErrorMessage] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { isLogin } = useAuth();
   const navigate = useNavigate();
 
-  if (isLogin) {
-    navigate("/");
-  }
-
-  const fetchUser = async (data) => {
-    setLoading(true);
-    const response = await login(data.username, data.password);
-    if (response.status === 200) {
-      navigate("/")
-    } else {
-      setShowErrorMessage(true);
+  useEffect(() => {
+    if (isLogin) {
+      navigate("/");
     }
-    setLoading(false);
-  }
+  }, [])
 
+  const [showErrorMessage, setShowErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const authService = new AuthService()
   const formik = useFormik({
     initialValues: {
       username: '',
-      password: ''
+      password: '',
+      confirmPassword: ''
     },
-    validate: (data) => {
+    validate: (data) => { 
       let errors = {};
       if (!data.username) errors.username = 'Username is required.';
       if (!data.password) errors.password = 'Password is required.';
+      if (data.username.length < 3) errors.username = 'Username must be at least 3 characters';
+      if (data.password.length < 6) errors.password = 'Password must be at least 6 characters';
+      if (data.password !== data.confirmPassword) errors.confirmPassword = "Passwords are not the same."
       return errors;
     },
     onSubmit: (data) => {
-      setShowErrorMessage(false);
-      formik.resetForm();
-      fetchUser(data);
+      setShowErrorMessage("");
+      registerUser(data);
     }
   });
+
+  const registerUser = async (data) => {
+    setLoading(true);
+    const response = await authService.register(data.username, data.password);
+    if (response.status === 200) {
+      navigate("/")
+    } else if (response.status === 400) {
+      const json = await response.json();
+      if (json.errors.Username) {
+        setShowErrorMessage(json.errors.Username[0]);
+      }
+    }
+    setLoading(false);
+  }
 
   const isFormFieldValid = (name) => !!(formik.touched[name] && formik.errors[name]);
   const getFormErrorMessage = (name) => {
@@ -56,8 +66,8 @@ export function Register() {
   return (
     <div className="flex justify-content-center">
       <Card className="text-center pl-4 pr-4">
-        <h2>Login</h2>
-        <Link to="/register">Sign up</Link>
+        <h2>Register</h2>
+        Have an account? <Link to="/login">Sign in</Link>
         <form onSubmit={formik.handleSubmit} className="p-fluid mt-4">
           <div className="field">
             <span className="p-float-label">
@@ -73,7 +83,14 @@ export function Register() {
             </span>
             {getFormErrorMessage('password')}
           </div>
-          {showErrorMessage && <p className="text-center p-error">Invalid username or password</p>}
+          <div className="field">
+            <span className="p-float-label">
+              <Password id="confirmPassword" name="confirmPassword" value={formik.values.confirmPassword} onChange={formik.handleChange} feedback={false} className={classNames({ 'p-invalid': isFormFieldValid('confirmPassword') })} />
+              <label htmlFor="confirmPassword" className={classNames({ 'p-error': isFormFieldValid('confirmPassword') })}>Confirm password</label>
+            </span>
+            {getFormErrorMessage('confirmPassword')}
+          </div>
+          <p className="text-center p-error">{showErrorMessage}</p>
           <Button type="submit" label="Submit" className="mt-4" loading={loading}/>
         </form>
       </Card>

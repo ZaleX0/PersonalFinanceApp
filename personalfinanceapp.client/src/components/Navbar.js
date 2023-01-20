@@ -11,7 +11,8 @@ export function Navbar() {
   const navigate = useNavigate();
 
   const items = [
-    {label: 'Home', icon: "pi pi-fw pi-home", command:()=>navigate("/")}
+    {label: 'Home', icon: "pi pi-fw pi-home", command:()=>navigate("/")},
+    {label: 'History', icon: "pi pi-fw pi-list", command:()=>navigate("/history")}
   ];
 
   const end = isLogin
@@ -20,6 +21,7 @@ export function Navbar() {
       <Button label="Logout" onClick={()=>setShowLogoutDialog(true)} className="ml-4"/>
     </div>
 
+  if (!isLogin) return;
   return (
     <>
       <Menubar model={items} className="mb-4 mt-4" end={end} />
@@ -37,7 +39,7 @@ export function Navbar() {
 
     return (
       <Dialog visible={showLogoutDialog} onHide={hide} footer={footer} closable={false}>
-        <div className="text-center">Are you sure?</div>
+        <div className="text-center">Do you want to logout?</div>
       </Dialog>
     )
   }
