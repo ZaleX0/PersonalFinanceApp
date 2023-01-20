@@ -5,7 +5,7 @@ using PersonalFinanceApp.Data.Interfaces;
 using PersonalFinanceApp.Services.Exceptions;
 using PersonalFinanceApp.Services.Interfaces;
 using PersonalFinanceApp.Services.Models;
-using System.Diagnostics;
+using PersonalFinanceApp.Services.Models.Queries;
 
 namespace PersonalFinanceApp.Services;
 
@@ -25,9 +25,9 @@ public class ExpensesService : IExpensesService
         _userContextService = userContextService;
     }
 
-    public async Task<ICollection<ExpenseDto>> GetAllForUser()
+    public async Task<ICollection<ExpenseDto>> GetAllForUser(IncomeExpenseQuery query)
     {
-        var expenses = await GetUserExpenses();
+        var expenses = await GetUserExpenses(query);
         var expenseDtos = _mapper.Map<ICollection<ExpenseDto>>(expenses);
         return expenseDtos;
     }
@@ -77,12 +77,17 @@ public class ExpensesService : IExpensesService
         return expense;
     }
 
-    private async Task<ICollection<Expense>> GetUserExpenses()
+    private async Task<ICollection<Expense>> GetUserExpenses(IncomeExpenseQuery query)
     {
         var userId = _userContextService.TryGetUserId();
         return await _unitOfWork.Expenses.Get()
-            .Include(e => e.Category)
-            .Where(e => e.Category.UserId == userId)
+            .Include(i => i.Category)
+            .Where(i => i.Category.UserId == userId)
+            .Where(i => query.CategoryId == null || i.CategoryId == query.CategoryId)
+            .Where(i => query.DateFrom == null || i.Date >= query.DateFrom)
+            .Where(i => query.DateTo == null || i.Date <= query.DateTo)
+            .Where(i => query.Search == null || i.Comment != null && i.Comment.ToLower().Contains(query.Search.ToLower()))
+            .OrderByDescending(i => i.Date)
             .ToListAsync();
     }
 
@@ -90,7 +95,6 @@ public class ExpensesService : IExpensesService
     {
         var category = await _unitOfWork.ExpenseCategories.GetByIdAsync(categoryId);
         var userId = _userContextService.UserId;
-
         if (category == null || category?.Id != userId)
             throw new NotFoundException("Category not found");
     }

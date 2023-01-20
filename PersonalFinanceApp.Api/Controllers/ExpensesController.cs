@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PersonalFinanceApp.Services.Interfaces;
 using PersonalFinanceApp.Services.Models;
+using PersonalFinanceApp.Services.Models.Queries;
 
 namespace PersonalFinanceApp.Api.Controllers;
 
@@ -27,10 +28,10 @@ public class ExpensesController : ControllerBase
     #region Expense endpoints
 
     [HttpGet]
-    public async Task<IActionResult> GetUserExpenses()
+    public async Task<IActionResult> GetUserExpenses([FromQuery] IncomeExpenseQuery query)
     {
         await _regularExpensesService.HandleAddingExpenses();
-        var expenses = await _expensesService.GetAllForUser();
+        var expenses = await _expensesService.GetAllForUser(query);
         return Ok(expenses);
     }
 

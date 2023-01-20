@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PersonalFinanceApp.Services.Interfaces;
 using PersonalFinanceApp.Services.Models;
+using PersonalFinanceApp.Services.Models.Queries;
 
 namespace PersonalFinanceApp.Api.Controllers;
 
@@ -27,10 +28,10 @@ public class IncomesController : ControllerBase
     #region Income endpoints
 
     [HttpGet]
-    public async Task<IActionResult> GetUserIncomes()
+    public async Task<IActionResult> GetUserIncomes([FromQuery] IncomeExpenseQuery query)
     {
         await _regularIncomesService.HandleAddingIncomes();
-        var incomes = await _incomesService.GetAllForUser();
+        var incomes = await _incomesService.GetAllForUser(query);
         return Ok(incomes);
     }
 
