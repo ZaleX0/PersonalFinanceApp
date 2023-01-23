@@ -18,7 +18,7 @@ export function Navbar() {
   const end = isLogin
   && <div className="flex align-items-center">
       <p><span className="text-400">Signed in as</span> {user.username}</p>
-      <Button label="Logout" onClick={()=>setShowLogoutDialog(true)} className="ml-4"/>
+      <Button icon="pi pi-fw pi-sign-out" label="Logout" onClick={()=>setShowLogoutDialog(true)} className="ml-4"/>
     </div>
 
   if (!isLogin) return;

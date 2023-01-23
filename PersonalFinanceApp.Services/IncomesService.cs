@@ -83,7 +83,7 @@ public class IncomesService : IIncomesService
 		return await _unitOfWork.Incomes.Get()
             .Include(i => i.Category)
             .Where(i => i.Category.UserId == userId)
-            .Where(i => query.CategoryId == null || i.CategoryId == query.CategoryId)
+            .Where(i => query.IncomeCategoryId == null || i.CategoryId == query.IncomeCategoryId)
             .Where(i => query.DateFrom == null || i.Date >= query.DateFrom)
             .Where(i => query.DateTo == null || i.Date <= query.DateTo)
             .Where(i => query.Search == null || i.Comment != null && i.Comment.ToLower().Contains(query.Search.ToLower()))

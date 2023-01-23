@@ -78,6 +78,7 @@ builder.Services.AddScoped<IRegularIncomesService, RegularIncomesService>();
 builder.Services.AddScoped<IRegularExpensesService, RegularExpensesService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IUserContextService, UserContextService>();
+builder.Services.AddScoped<IIncomeExpenseService, IncomeExpenseService>();
 
 builder.Services.AddHttpContextAccessor();
 
