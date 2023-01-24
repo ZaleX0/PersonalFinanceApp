@@ -1,8 +1,12 @@
+import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
+import { InputText } from 'primereact/inputtext';
+import { InputNumber } from 'primereact/inputnumber';
+import { Calendar } from 'primereact/calendar';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
-import { Dropdown } from 'primereact/dropdown';
+import { Dialog } from 'primereact/dialog';
 import { useEffect, useState } from 'react';
 import IncomeExpenseService from '../services/IncomeExpenseService';
 
@@ -10,6 +14,8 @@ export default function History() {
   const incomeExpenseService = new IncomeExpenseService();
   const [incomesExpenses, setIncomesExpenses] = useState([]);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [selectedIncomeExpense, setSelectedIncomeExpense] = useState({});
   const [query, setQuery] = useState({
     search: "",
     incomeCategoryId: "",
@@ -27,7 +33,16 @@ export default function History() {
     fetchIncomes();
   }, [])
   
-  
+  const openDeleteDialog = (rowData) => {
+    setSelectedIncomeExpense(rowData);
+    setShowDeleteDialog(true);
+  }
+  const openEditDialog = (rowData) => {
+    
+    setSelectedIncomeExpense(rowData);
+    setShowEditDialog(true);
+  }
+
   const priceBodyTemplate = (rowData) => {
     return rowData.type === 0
       ? <div className="text-green-400">+{rowData.price}</div>
@@ -37,21 +52,124 @@ export default function History() {
   const actionBodyTemplate = (rowData) => {
     return (
       <div className="flex justify-content-center">
-        <Button icon="pi pi-pencil" className="p-button-rounded p-button-info mr-2"/>
-        <Button icon="pi pi-trash" className="p-button-rounded p-button-danger"/>
+        <Button icon="pi pi-pencil" className="p-button-rounded p-button-info mr-2" onClick={()=>openEditDialog(rowData)}/>
+        <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" onClick={()=>openDeleteDialog(rowData)}/>
       </div>
     )
   }
 
+  function deleteDialog() {
+    const hide = () => setShowDeleteDialog(false);
+    const handleDelete = async () => {
+      await incomeExpenseService.deleteIncomeExpense(selectedIncomeExpense);
+      let _incomeExpense = incomesExpenses.filter(val => val.id !== selectedIncomeExpense.id || val.type !== selectedIncomeExpense.type)
+      setIncomesExpenses(_incomeExpense);
+      hide();
+    }
+    const footer = <div>
+      <Button label="Yes" onClick={handleDelete} className="p-button-text"/>
+      <Button label="No" onClick={hide} autoFocus/>
+    </div>
+
+    return (
+      <Dialog visible={showDeleteDialog} onHide={hide} header="Delete" footer={footer}>
+        Do you want to delete this {selectedIncomeExpense.type === 0 ? "income" : "expense"}?
+      </Dialog>
+    )
+  }
+
+  function editDialog() {
+    const hide = () => setShowEditDialog(false);
+    const footer = <div>
+      <Button label="Cancel" onClick={hide} className="p-button-text"/>
+      <Button label="Submit" onClick={hide}/>
+    </div>
+
+    return (
+      <Dialog visible={showEditDialog} onHide={hide} header={selectedIncomeExpense.type === 0 ? "Edit income" : "Edit expense"}>
+        <Card>
+          <Formik
+            initialValues={{
+              categoryId: selectedIncomeExpense.categoryId,
+              price: selectedIncomeExpense.price,
+              comment: selectedIncomeExpense.comment,
+              date: new Date(selectedIncomeExpense.date)
+            }}
+            validate={values => {
+              const errors = {};
+              if (!values.date) errors.date = "Required";
+              if (!values.price) errors.price = "Required";
+              return errors;
+            }}
+            onSubmit={async (data) => {
+              const d = data.date
+              data.date = new Date(d.getTime() - (d.getTimezoneOffset() * 60000 ))
+                .toISOString()
+                .split("T")[0];
+              data.id = selectedIncomeExpense.id;
+              data.type = selectedIncomeExpense.type;
+              console.log(data);
+              await incomeExpenseService.updateIncomeExpense(data);
+            }}
+          >
+            {(props) => (
+              <div className="flex justify-content-center">
+              <Form className="p-fluid">
+                <Field name="price">
+                  {({ field }) => (
+                    <span className="p-float-label">
+                      <InputNumber
+                        autoFocus
+                        mode="decimal"
+                        maxFractionDigits={2}
+                        value={field.value}
+                        onChange={e => props.setFieldValue("price", e.value)}
+                        onBlur={props.onBlur}
+                        className={props.errors.price && 'p-invalid'}
+                      />
+                      <label htmlFor="price" className={props.errors.price && 'p-error'}>Price</label>
+                    </span>
+                  )}
+                </Field>
+                <Field name="date">
+                  {({ field }) => (
+                    <span className="p-float-label mt-4">
+                      <Calendar {...field} dateFormat="yy-mm-dd" className={props.errors.date && 'p-invalid'} showIcon/>
+                      <label htmlFor="date" className={props.errors.date && 'p-error'}>Date</label>
+                    </span>
+                  )}
+                </Field>
+                <Field name="comment">
+                  {({ field }) => (
+                    <span className="p-float-label mt-4">
+                      <InputText {...field}/>
+                      <label htmlFor="comment">Comment</label>
+                    </span>
+                  )}
+                </Field>
+                <Button type="submit" label="Update" className="mt-4"/>
+              </Form>
+              </div>
+            )}
+          </Formik>
+        </Card>
+      </Dialog>
+    )
+  }
+
   return (
-    <Card>
-      <DataTable value={incomesExpenses} size="small" paginator rows={10} stripedRows showGridlines>
-        <Column field="date" header="Date"/>
-        <Column field="price" header="Price" body={priceBodyTemplate}/>
-        <Column field="categoryName" header="Category"/>
-        <Column field="comment" header="Comment"/>
-        <Column body={actionBodyTemplate}/>
-      </DataTable>
-    </Card>
+    <>
+      <Card>
+        <DataTable value={incomesExpenses} size="small" paginator rows={10} stripedRows showGridlines>
+          <Column field="date" header="Date"/>
+          <Column field="price" header="Price" body={priceBodyTemplate}/>
+          <Column field="categoryName" header="Category"/>
+          <Column field="comment" header="Comment"/>
+          <Column body={actionBodyTemplate}/>
+        </DataTable>
+      </Card>
+      {editDialog()}
+      {deleteDialog()}
+    </>
   )
 }

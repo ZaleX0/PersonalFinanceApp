@@ -43,7 +43,7 @@ public class IncomesController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateIncome(AddIncomeDto dto, int id)
+    public async Task<IActionResult> UpdateIncome(AddIncomeDto dto, [FromRoute] int id)
     {
         await _incomesService.Update(dto, id);
         return Ok();
