@@ -37,6 +37,7 @@ public class ExpenseCategoriesService : IExpenseCategoriesService
         {
             UserId = _userContextService.TryGetUserId(),
             Name = dto.Name,
+            Color = dto.Color
         };
         await _unitOfWork.ExpenseCategories.AddAsync(expenseCategory);
         await _unitOfWork.CommitAsync();
@@ -47,6 +48,7 @@ public class ExpenseCategoriesService : IExpenseCategoriesService
         var expenseCategory = await GetUserExpenseCategoryById(id);
 
         expenseCategory.Name = dto.Name;
+        expenseCategory.Color = dto.Color;
 
         _unitOfWork.ExpenseCategories.Update(expenseCategory);
         await _unitOfWork.CommitAsync();
@@ -68,7 +70,8 @@ public class ExpenseCategoriesService : IExpenseCategoriesService
             await _unitOfWork.ExpenseCategories.AddAsync(new ExpenseCategory
             {
                 User = user,
-                Name = category
+                Name = category,
+                Color = "9FA8DA"
             });
         }
     }

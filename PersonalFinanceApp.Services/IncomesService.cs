@@ -95,7 +95,7 @@ public class IncomesService : IIncomesService
 	{
 		var category = await _unitOfWork.IncomeCategories.GetByIdAsync(categoryId);
 		var userId = _userContextService.TryGetUserId();
-		if (category == null || category?.Id != userId)
+		if (category == null || category?.UserId != userId)
 			throw new NotFoundException("Category not found");
 	}
 }

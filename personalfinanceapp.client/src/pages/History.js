@@ -5,14 +5,20 @@ import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
 import { Calendar } from 'primereact/calendar';
 import { Column } from 'primereact/column';
+import { Dropdown } from 'primereact/dropdown';
 import { DataTable } from 'primereact/datatable';
 import { Dialog } from 'primereact/dialog';
 import { useEffect, useState } from 'react';
 import IncomeExpenseService from '../services/IncomeExpenseService';
+import formatDate from '../utils/formatDate';
+import CategoriesService from '../services/CategoriesService';
 
 export default function History() {
   const incomeExpenseService = new IncomeExpenseService();
+  const categoriesService = new CategoriesService();
   const [incomesExpenses, setIncomesExpenses] = useState([]);
+  const [incomeCategories, setIncomeCategories] = useState([]);
+  const [expenseCategories, setExpenseCategories] = useState([]);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [selectedIncomeExpense, setSelectedIncomeExpense] = useState({});
@@ -25,12 +31,20 @@ export default function History() {
   });
 
   useEffect(() => {
-    const fetchIncomes = async () => {
+    const fetchData = async () => {
       const response = await incomeExpenseService.getIncomesExpenses("");
       const json = await response.json();
+      json.forEach(element => element.date = formatDate(element.date));
       setIncomesExpenses(json);
+
+      await categoriesService.getIncomeCategories()
+        .then(response => response.json())
+        .then(data => setIncomeCategories(data));
+      await categoriesService.getExpenseCategories()
+        .then(response => response.json())
+        .then(data => setExpenseCategories(data));
     }
-    fetchIncomes();
+    fetchData();
   }, [])
   
   const openDeleteDialog = (rowData) => {
@@ -102,14 +116,26 @@ export default function History() {
               return errors;
             }}
             onSubmit={async (data) => {
-              const d = data.date
-              data.date = new Date(d.getTime() - (d.getTimezoneOffset() * 60000 ))
-                .toISOString()
-                .split("T")[0];
               data.id = selectedIncomeExpense.id;
               data.type = selectedIncomeExpense.type;
+              const newIncomesExpenses = incomesExpenses.map(ie => {
+                if (ie.id === data.id && ie.type === data.type)
+                  return {
+                    id: ie.id,
+                    type: ie.type,
+                    categoryId: data.categoryId,
+                    categoryName: ie.categoryName,
+                    price: data.price,
+                    comment: data.comment,
+                    date: formatDate(data.date)
+                  };
+                return ie;
+              });
+              setIncomesExpenses(newIncomesExpenses);
+              data.date = formatDate(data.date)
+              hide();
               console.log(data);
-              await incomeExpenseService.updateIncomeExpense(data);
+              //await incomeExpenseService.updateIncomeExpense(data);
             }}
           >
             {(props) => (
@@ -130,6 +156,19 @@ export default function History() {
                       <label htmlFor="price" className={props.errors.price && 'p-error'}>Price</label>
                     </span>
                   )}
+                </Field>
+                <Field name="categoryId">
+                  {({ field }) => {
+                    const options = selectedIncomeExpense.type === 0
+                      ? incomeCategories
+                      : expenseCategories;
+                    return (
+                      <span className="p-float-label mt-4">
+                        <Dropdown {...field} options={options} optionLabel="name" optionValue="id"/>
+                        <label htmlFor="date">Category</label>
+                      </span>
+                    )}
+                  }
                 </Field>
                 <Field name="date">
                   {({ field }) => (

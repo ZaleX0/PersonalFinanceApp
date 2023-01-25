@@ -12,6 +12,7 @@ import GuardedRoute from './utils/GuardedRoute';
 import { AuthProvider } from './contexts/AuthContext';
 import { Register } from './pages/Register';
 import History from './pages/History';
+import Categories from './pages/Categories';
 
 export default function App() {
   return (
@@ -32,6 +33,7 @@ function DefineRoutes() {
         <Route path="/register" element={<Register/>}/>
         <Route path="/" element={<GuardedRoute><Home/></GuardedRoute>}/>
         <Route path="/history" element={<GuardedRoute><History/></GuardedRoute>}/>
+        <Route path="/categories" element={<GuardedRoute><Categories/></GuardedRoute>}/>
       </Routes>
     </>
   )

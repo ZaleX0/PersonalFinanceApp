@@ -12,7 +12,8 @@ export function Navbar() {
 
   const items = [
     {label: 'Home', icon: "pi pi-fw pi-home", command:()=>navigate("/")},
-    {label: 'History', icon: "pi pi-fw pi-list", command:()=>navigate("/history")}
+    {label: 'History', icon: "pi pi-fw pi-list", command:()=>navigate("/history")},
+    {label: 'Categories', icon: "pi pi-fw pi-list", command:()=>navigate("/categories")}
   ];
 
   const end = isLogin

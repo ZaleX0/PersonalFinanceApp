@@ -95,7 +95,7 @@ public class ExpensesService : IExpensesService
     {
         var category = await _unitOfWork.ExpenseCategories.GetByIdAsync(categoryId);
         var userId = _userContextService.UserId;
-        if (category == null || category?.Id != userId)
+        if (category == null || category?.UserId != userId)
             throw new NotFoundException("Category not found");
     }
 }
