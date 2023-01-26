@@ -36,8 +36,7 @@ public class IncomeCategoriesService : IIncomeCategoriesService
 		var incomeCategory = new IncomeCategory
 		{
 			UserId = _userContextService.TryGetUserId(),
-			Name = dto.Name,
-			Color = dto.Color
+			Name = dto.Name
 		};
 		await _unitOfWork.IncomeCategories.AddAsync(incomeCategory);
 		await _unitOfWork.CommitAsync();
@@ -48,7 +47,6 @@ public class IncomeCategoriesService : IIncomeCategoriesService
 		var incomeCategory = await GetUserIncomeCategoryById(id);
 
 		incomeCategory.Name = dto.Name;
-		incomeCategory.Color = dto.Color;
 
 		_unitOfWork.IncomeCategories.Update(incomeCategory);
 		await _unitOfWork.CommitAsync();
@@ -70,8 +68,7 @@ public class IncomeCategoriesService : IIncomeCategoriesService
 			await _unitOfWork.IncomeCategories.AddAsync(new IncomeCategory
 			{
 				User = user,
-				Name = category,
-				Color = "9FA8DA"
+				Name = category
             });
 		}
 	}
