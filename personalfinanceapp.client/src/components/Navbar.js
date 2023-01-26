@@ -13,11 +13,11 @@ export function Navbar() {
   const items = [
     {label: 'Home', icon: "pi pi-fw pi-home", command:()=>navigate("/")},
     {label: 'History', icon: "pi pi-fw pi-list", command:()=>navigate("/history")},
-    {label: 'Categories', icon: "pi pi-fw pi-list", command:()=>navigate("/categories")}
+    {label: 'Categories', icon: "pi pi-fw pi-tags", command:()=>navigate("/categories")}
   ];
 
   const end = isLogin
-  && <div className="flex align-items-center">
+    && <div className="flex align-items-center">
       <p><span className="text-400">Signed in as</span> {user.username}</p>
       <Button icon="pi pi-fw pi-sign-out" label="Logout" onClick={()=>setShowLogoutDialog(true)} className="ml-4"/>
     </div>

@@ -37,10 +37,10 @@ export default function History() {
       json.forEach(element => element.date = formatDate(element.date));
       setIncomesExpenses(json);
 
-      await categoriesService.getIncomeCategories()
+      categoriesService.getIncomeCategories()
         .then(response => response.json())
         .then(data => setIncomeCategories(data));
-      await categoriesService.getExpenseCategories()
+      categoriesService.getExpenseCategories()
         .then(response => response.json())
         .then(data => setExpenseCategories(data));
     }
@@ -52,7 +52,6 @@ export default function History() {
     setShowDeleteDialog(true);
   }
   const openEditDialog = (rowData) => {
-    
     setSelectedIncomeExpense(rowData);
     setShowEditDialog(true);
   }
@@ -140,7 +139,6 @@ export default function History() {
               setIncomesExpenses(newIncomesExpenses);
               data.date = formatDate(data.date)
               hide();
-              console.log(data);
               await incomeExpenseService.updateIncomeExpense(data);
             }}
           >
