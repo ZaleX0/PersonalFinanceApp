@@ -65,7 +65,7 @@ export default function History() {
 
   const actionBodyTemplate = (rowData) => {
     return (
-      <div className="flex justify-content-center">
+      <div className="flex justify-content-end">
         <Button icon="pi pi-pencil" className="p-button-rounded p-button-info mr-2" onClick={()=>openEditDialog(rowData)}/>
         <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" onClick={()=>openDeleteDialog(rowData)}/>
       </div>
@@ -90,6 +90,12 @@ export default function History() {
         Do you want to delete this {selectedIncomeExpense.type === 0 ? "income" : "expense"}?
       </Dialog>
     )
+  }
+
+  function getCategoryName(type, categoryId) {
+    const categories = type === 0 ? incomeCategories : expenseCategories;
+    const category = categories.find(c => c.id === categoryId);
+    return category.name;
   }
 
   function editDialog() {
@@ -124,7 +130,7 @@ export default function History() {
                     id: ie.id,
                     type: ie.type,
                     categoryId: data.categoryId,
-                    categoryName: ie.categoryName,
+                    categoryName: getCategoryName(ie.type, data.categoryId),
                     price: data.price,
                     comment: data.comment,
                     date: formatDate(data.date)
@@ -135,7 +141,7 @@ export default function History() {
               data.date = formatDate(data.date)
               hide();
               console.log(data);
-              //await incomeExpenseService.updateIncomeExpense(data);
+              await incomeExpenseService.updateIncomeExpense(data);
             }}
           >
             {(props) => (
@@ -199,7 +205,7 @@ export default function History() {
   return (
     <>
       <Card>
-        <DataTable value={incomesExpenses} size="small" paginator rows={10} stripedRows showGridlines>
+        <DataTable value={incomesExpenses} size="small" paginator rows={10} stripedRows className="surface-border border-x-1 border-top-1">
           <Column field="date" header="Date"/>
           <Column field="price" header="Price" body={priceBodyTemplate}/>
           <Column field="categoryName" header="Category"/>
