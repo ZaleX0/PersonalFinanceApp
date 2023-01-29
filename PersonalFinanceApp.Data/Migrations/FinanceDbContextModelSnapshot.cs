@@ -46,7 +46,7 @@ namespace PersonalFinanceApp.Data.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Expenses");
+                    b.ToTable("Expenses", (string)null);
                 });
 
             modelBuilder.Entity("PersonalFinanceApp.Data.Entities.ExpenseCategory", b =>
@@ -68,7 +68,7 @@ namespace PersonalFinanceApp.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ExpenseCategories");
+                    b.ToTable("ExpenseCategories", (string)null);
                 });
 
             modelBuilder.Entity("PersonalFinanceApp.Data.Entities.Income", b =>
@@ -95,7 +95,7 @@ namespace PersonalFinanceApp.Data.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Incomes");
+                    b.ToTable("Incomes", (string)null);
                 });
 
             modelBuilder.Entity("PersonalFinanceApp.Data.Entities.IncomeCategory", b =>
@@ -117,7 +117,7 @@ namespace PersonalFinanceApp.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("IncomeCategories");
+                    b.ToTable("IncomeCategories", (string)null);
                 });
 
             modelBuilder.Entity("PersonalFinanceApp.Data.Entities.RegularExpense", b =>
@@ -147,7 +147,7 @@ namespace PersonalFinanceApp.Data.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("RegularExpenses");
+                    b.ToTable("RegularExpenses", (string)null);
                 });
 
             modelBuilder.Entity("PersonalFinanceApp.Data.Entities.RegularIncome", b =>
@@ -177,7 +177,7 @@ namespace PersonalFinanceApp.Data.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("RegularIncomes");
+                    b.ToTable("RegularIncomes", (string)null);
                 });
 
             modelBuilder.Entity("PersonalFinanceApp.Data.Entities.User", b =>
@@ -198,7 +198,7 @@ namespace PersonalFinanceApp.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("PersonalFinanceApp.Data.Entities.Expense", b =>

@@ -5,7 +5,7 @@ using PersonalFinanceApp.Data.Interfaces;
 using PersonalFinanceApp.Services.Exceptions;
 using PersonalFinanceApp.Services.Interfaces;
 using PersonalFinanceApp.Services.Models;
-using System.Diagnostics;
+using PersonalFinanceApp.Services.Models.Queries;
 
 namespace PersonalFinanceApp.Services;
 
@@ -15,16 +15,19 @@ public class IncomesService : IIncomesService
 	private readonly IFinanceUnitOfWork _unitOfWork;
 	private readonly IUserContextService _userContextService;
 
-	public IncomesService(IMapper mapper, IFinanceUnitOfWork unitOfWork, IUserContextService userContextService)
+	public IncomesService(
+		IMapper mapper,
+		IFinanceUnitOfWork unitOfWork,
+		IUserContextService userContextService)
 	{
 		_mapper = mapper;
 		_unitOfWork = unitOfWork;
 		_userContextService = userContextService;
 	}
 
-	public async Task<ICollection<IncomeDto>> GetAllForUser()
+	public async Task<ICollection<IncomeDto>> GetAllForUser(IncomeExpenseQuery query)
 	{
-        var incomes = await GetUserIncomes();
+        var incomes = await GetUserIncomes(query);
 		var incomeDtos = _mapper.Map<ICollection<IncomeDto>>(incomes);
 		return incomeDtos;
     }
@@ -74,20 +77,25 @@ public class IncomesService : IIncomesService
 		return income;
     }
 
-	private async Task<ICollection<Income>> GetUserIncomes()
+	private async Task<ICollection<Income>> GetUserIncomes(IncomeExpenseQuery query)
 	{
-		var userId = _userContextService.TryGetUserId();
+        var userId = _userContextService.TryGetUserId();
 		return await _unitOfWork.Incomes.Get()
-			.Include(i => i.Category)
-			.Where(i => i.Category.UserId == userId)
+            .Include(i => i.Category)
+            .Where(i => i.Category.UserId == userId)
+            .Where(i => query.IncomeCategoryId == null || i.CategoryId == query.IncomeCategoryId)
+            .Where(i => query.DateFrom == null || i.Date >= query.DateFrom)
+            .Where(i => query.DateTo == null || i.Date <= query.DateTo)
+            .Where(i => query.Search == null || i.Comment != null && i.Comment.ToLower().Contains(query.Search.ToLower()))
+            .OrderByDescending(i => i.Date)
 			.ToListAsync();
     }
 
-	private async Task CheckIfUserCategoryExists(int categoryId)
+    private async Task CheckIfUserCategoryExists(int categoryId)
 	{
 		var category = await _unitOfWork.IncomeCategories.GetByIdAsync(categoryId);
 		var userId = _userContextService.TryGetUserId();
-		if (category == null || category?.Id != userId)
+		if (category == null || category?.UserId != userId)
 			throw new NotFoundException("Category not found");
 	}
 }

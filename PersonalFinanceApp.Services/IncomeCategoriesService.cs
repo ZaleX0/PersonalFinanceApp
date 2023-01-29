@@ -36,7 +36,7 @@ public class IncomeCategoriesService : IIncomeCategoriesService
 		var incomeCategory = new IncomeCategory
 		{
 			UserId = _userContextService.TryGetUserId(),
-			Name = dto.Name,
+			Name = dto.Name
 		};
 		await _unitOfWork.IncomeCategories.AddAsync(incomeCategory);
 		await _unitOfWork.CommitAsync();
@@ -69,7 +69,7 @@ public class IncomeCategoriesService : IIncomeCategoriesService
 			{
 				User = user,
 				Name = category
-			});
+            });
 		}
 	}
 

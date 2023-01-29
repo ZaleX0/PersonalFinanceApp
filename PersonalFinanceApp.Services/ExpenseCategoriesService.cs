@@ -36,7 +36,7 @@ public class ExpenseCategoriesService : IExpenseCategoriesService
         var expenseCategory = new ExpenseCategory
         {
             UserId = _userContextService.TryGetUserId(),
-            Name = dto.Name,
+            Name = dto.Name
         };
         await _unitOfWork.ExpenseCategories.AddAsync(expenseCategory);
         await _unitOfWork.CommitAsync();

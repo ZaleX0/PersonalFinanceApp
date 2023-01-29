@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using PersonalFinanceApp.Data.Entities;
+using PersonalFinanceApp.Services.Enums;
 using PersonalFinanceApp.Services.Models;
 using PersonalFinanceApp.Services.Models.User;
 
@@ -19,9 +20,11 @@ public class FinanceMappingProfile : Profile
         // Incomes/Expenses
         CreateMap<Income, IncomeDto>();
         CreateMap<AddIncomeDto, Income>();
+        CreateMap<IncomeDto, IncomeExpenseDto>().ForMember(d => d.Type, c => c.MapFrom(s => IncomeExpenseType.Income));
 
         CreateMap<Expense, ExpenseDto>();
         CreateMap<AddExpenseDto, Expense>();
+        CreateMap<ExpenseDto, IncomeExpenseDto>().ForMember(d => d.Type, c => c.MapFrom(s => IncomeExpenseType.Expense));
 
         // Regular Incomes/Expenses
         CreateMap<AddRegularIncomeDto, RegularIncome>();
