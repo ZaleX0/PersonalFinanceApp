@@ -3,15 +3,15 @@ import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 
 import "primeflex/primeflex.css"
-import "primereact/resources/themes/md-dark-indigo/theme.css";  //theme
-import "primereact/resources/primereact.min.css";                  //core css
-import "primeicons/primeicons.css";                                //icons
+import "primereact/resources/themes/md-dark-indigo/theme.css";
+import "primereact/resources/primereact.min.css";                  
+import "primeicons/primeicons.css";                                
 import { Login } from './pages/Login';
 import { Navbar } from './components/Navbar';
 import GuardedRoute from './utils/GuardedRoute';
 import { AuthProvider } from './contexts/AuthContext';
 import { Register } from './pages/Register';
-import History from './pages/History';
+import IncomesExpenses from './pages/IncomesExpenses';
 import Categories from './pages/Categories';
 
 export default function App() {
@@ -32,7 +32,7 @@ function DefineRoutes() {
         <Route path="/login" element={<Login/>}/>
         <Route path="/register" element={<Register/>}/>
         <Route path="/" element={<GuardedRoute><Home/></GuardedRoute>}/>
-        <Route path="/history" element={<GuardedRoute><History/></GuardedRoute>}/>
+        <Route path="/incomes-expenses" element={<GuardedRoute><IncomesExpenses/></GuardedRoute>}/>
         <Route path="/categories" element={<GuardedRoute><Categories/></GuardedRoute>}/>
       </Routes>
     </>

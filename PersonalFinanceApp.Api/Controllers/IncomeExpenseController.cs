@@ -10,17 +10,17 @@ namespace PersonalFinanceApp.Api.Controllers;
 [Authorize]
 public class IncomeExpenseController : ControllerBase
 {
-	private readonly IIncomeExpenseService _service;
+	private readonly IIncomeExpenseService _incomeExpenseService;
 
-	public IncomeExpenseController(IIncomeExpenseService service)
+	public IncomeExpenseController(IIncomeExpenseService incomeExpenseService)
 	{
-		_service = service;
+        _incomeExpenseService = incomeExpenseService;
 	}
 
 	[HttpGet]
 	public async Task<IActionResult> GetIncomeExpenseData([FromQuery] IncomeExpenseQuery query)
 	{
-		var result = await _service.GetIncomeExpenseData(query);
+		var result = await _incomeExpenseService.GetIncomeExpenseData(query);
 		return Ok(result);
 	}
 }

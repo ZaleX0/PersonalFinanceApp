@@ -12,22 +12,31 @@ public class IncomeExpenseService : IIncomeExpenseService
 	private readonly IFinanceUnitOfWork _unitOfWork;
 	private readonly IIncomesService _incomesService;
 	private readonly IExpensesService _expensesService;
+	private readonly IRegularIncomesService _regularIncomesService;
+	private readonly IRegularExpensesService _regularExpensesService;
 
 	public IncomeExpenseService(
 		IMapper mapper,
 		IFinanceUnitOfWork unitOfWork,
 		IIncomesService incomesService,
-		IExpensesService expensesService)
+		IExpensesService expensesService,
+        IRegularIncomesService regularIncomesService,
+        IRegularExpensesService regularExpensesService)
 	{
 		_mapper = mapper;
 		_unitOfWork = unitOfWork;
 		_incomesService = incomesService;
 		_expensesService = expensesService;
+		_regularIncomesService = regularIncomesService;
+		_regularExpensesService = regularExpensesService;
 	}
 
 	public async Task<ICollection<IncomeExpenseDto>> GetIncomeExpenseData(IncomeExpenseQuery query)
 	{
-		var incomeDtos = await _incomesService.GetAllForUser(query);
+        await _regularIncomesService.HandleAddingIncomes();
+        await _regularExpensesService.HandleAddingExpenses();
+
+        var incomeDtos = await _incomesService.GetAllForUser(query);
 		var expenseDtos = await _expensesService.GetAllForUser(query);
 
         var incomes = _mapper.Map<ICollection<IncomeExpenseDto>>(incomeDtos);

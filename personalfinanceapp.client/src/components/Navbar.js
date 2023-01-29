@@ -12,7 +12,7 @@ export function Navbar() {
 
   const items = [
     {label: 'Home', icon: "pi pi-fw pi-home", command:()=>navigate("/")},
-    {label: 'History', icon: "pi pi-fw pi-list", command:()=>navigate("/history")},
+    {label: 'Incomes & Expenses', icon: "pi pi-fw pi-list", command:()=>navigate("/incomes-expenses")},
     {label: 'Categories', icon: "pi pi-fw pi-tags", command:()=>navigate("/categories")}
   ];
 
@@ -25,7 +25,7 @@ export function Navbar() {
   if (!isLogin) return;
   return (
     <>
-      <Menubar model={items} className="mb-4 mt-4" end={end} />
+      <Menubar model={items} className="mb-2 mt-4" end={end} />
       {logoutDialog()}
     </>
   )

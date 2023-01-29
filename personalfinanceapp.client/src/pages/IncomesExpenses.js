@@ -1,4 +1,4 @@
-import { ErrorMessage, Field, Form, Formik } from 'formik';
+import { Field, Form, Formik } from 'formik';
 import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
 import { InputText } from 'primereact/inputtext';
@@ -13,7 +13,7 @@ import IncomeExpenseService from '../services/IncomeExpenseService';
 import formatDate from '../utils/formatDate';
 import CategoriesService from '../services/CategoriesService';
 
-export default function History() {
+export default function IncomesExpenses() {
   const incomeExpenseService = new IncomeExpenseService();
   const categoriesService = new CategoriesService();
   const [incomesExpenses, setIncomesExpenses] = useState([]);
@@ -21,14 +21,8 @@ export default function History() {
   const [expenseCategories, setExpenseCategories] = useState([]);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showAddDialog, setShowAddDialog] = useState(false);
   const [selectedIncomeExpense, setSelectedIncomeExpense] = useState({});
-  const [query, setQuery] = useState({
-    search: "",
-    incomeCategoryId: "",
-    expenseCategoryId: "",
-    dateFrom: "",
-    dateTo: ""
-  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,6 +41,11 @@ export default function History() {
     fetchData();
   }, [])
   
+  const openAddDialog = (incomeExpenseType) => {
+    setSelectedIncomeExpense({type: incomeExpenseType});
+    setShowAddDialog(true);
+  }
+
   const openDeleteDialog = (rowData) => {
     setSelectedIncomeExpense(rowData);
     setShowDeleteDialog(true);
@@ -97,13 +96,92 @@ export default function History() {
     return category.name;
   }
 
+  function addDialog() {
+    const hide = () => setShowAddDialog(false);
+    return (
+      <Dialog visible={showAddDialog} onHide={hide} header={selectedIncomeExpense.type === 0 ? "Add new income" : "Add new expense"}>
+        <Card>
+          <Formik
+            initialValues={{
+              categoryId: null,
+              price: 100,
+              comment: '',
+              date: new Date(new Date().getFullYear(),  new Date().getMonth(), new Date().getDate())
+            }}
+            validate={values => {
+              const errors = {};
+              if (!values.categoryId) errors.category = "Required";
+              if (!values.date) errors.date = "Required";
+              if (!values.price) errors.price = "Required";
+              return errors;
+            }}
+            onSubmit={async (data) => {
+              hide();
+              data.type = selectedIncomeExpense.type;
+              data.date = formatDate(data.date);
+              await incomeExpenseService.addIncomeExpense(data);
+            }}
+          >
+            {(props) => (
+              <div className="flex justify-content-center">
+              <Form className="p-fluid">
+                <Field name="price">
+                  {({ field }) => (
+                    <span className="p-float-label">
+                      <InputNumber
+                        autoFocus
+                        mode="decimal"
+                        maxFractionDigits={2}
+                        value={field.value}
+                        onChange={e => props.setFieldValue("price", e.value)}
+                        onBlur={props.onBlur}
+                        className={props.errors.price && 'p-invalid'}
+                      />
+                      <label htmlFor="price" className={props.errors.price && 'p-error'}>Price</label>
+                    </span>
+                  )}
+                </Field>
+                <Field name="categoryId">
+                  {({ field }) => {
+                    const options = selectedIncomeExpense.type === 0
+                      ? incomeCategories
+                      : expenseCategories;
+                    return (
+                      <span className="p-float-label mt-4">
+                        <Dropdown {...field} options={options} optionLabel="name" optionValue="id" className={props.errors.category && 'p-invalid'}/>
+                        <label htmlFor="date" className={props.errors.category && 'p-error'}>Category</label>
+                      </span>
+                    )}
+                  }
+                </Field>
+                <Field name="date">
+                  {({ field }) => (
+                    <span className="p-float-label mt-4">
+                      <Calendar {...field} dateFormat="yy-mm-dd" className={props.errors.date && 'p-invalid'} showIcon/>
+                      <label htmlFor="date" className={props.errors.date && 'p-error'}>Date</label>
+                    </span>
+                  )}
+                </Field>
+                <Field name="comment">
+                  {({ field }) => (
+                    <span className="p-float-label mt-4">
+                      <InputText {...field}/>
+                      <label htmlFor="comment">Comment</label>
+                    </span>
+                  )}
+                </Field>
+                <Button type="submit" label="Update" className="mt-4"/>
+              </Form>
+              </div>
+            )}
+          </Formik>
+        </Card>
+      </Dialog>
+    )
+  }
+
   function editDialog() {
     const hide = () => setShowEditDialog(false);
-    const footer = <div>
-      <Button label="Cancel" onClick={hide} className="p-button-text"/>
-      <Button label="Submit" onClick={hide}/>
-    </div>
-
     return (
       <Dialog visible={showEditDialog} onHide={hide} header={selectedIncomeExpense.type === 0 ? "Edit income" : "Edit expense"}>
         <Card>
@@ -203,6 +281,18 @@ export default function History() {
   return (
     <>
       <Card>
+        <div className="flex justify-content-between align-items-center">
+          <h1>Incomes & Expenses</h1>
+          <div>
+            <div className="p-inputgroup">
+              <span className="p-inputgroup-addon">Add new</span>
+              <Button label="Income" onClick={()=>openAddDialog(0)}/>
+              <Button label="Expense" onClick={()=>openAddDialog(1)}/>
+            </div>
+          </div>
+        </div>
+      </Card>
+      <Card className="mt-2">
         <DataTable value={incomesExpenses} size="small" paginator rows={10} stripedRows className="surface-border border-x-1 border-top-1">
           <Column field="date" header="Date"/>
           <Column field="price" header="Price" body={priceBodyTemplate}/>
@@ -211,6 +301,7 @@ export default function History() {
           <Column body={actionBodyTemplate}/>
         </DataTable>
       </Card>
+      {addDialog()}
       {editDialog()}
       {deleteDialog()}
     </>
